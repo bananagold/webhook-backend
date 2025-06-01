@@ -1,4 +1,4 @@
-name: Deploy Webhook API to Azure
+name: Deploy Webhook API (modular)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 env:
   APP_NAME: webhook-api
   RESOURCE_GROUP: bananagold-rg
-  CONTAINER_ENV: bananagold-env
+  CONTAINER_ENV: bananagold-prod
   REGION: australiaeast
   IMAGE_NAME: ghcr.io/${{ github.repository }}
 
@@ -39,7 +39,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Deploy to Azure Container Apps
+    - name: Create or Update Azure Container App
       uses: azure/container-apps-deploy-action@v1
       with:
         app-name: ${{ env.APP_NAME }}
@@ -47,5 +47,6 @@ jobs:
         container-app-env: ${{ env.CONTAINER_ENV }}
         image: ${{ env.IMAGE_NAME }}
         target-port: 80
+        ingress: external
         environment-variables: |
           WEBHOOK_SECRET=${{ secrets.WEBHOOK_SECRET }}
